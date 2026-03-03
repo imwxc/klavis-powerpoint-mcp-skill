@@ -13,19 +13,192 @@
 - **Token Optimized** - 776 words skill content
 - **TDD Verified** - Complete test scenarios and rationalization table
 
-## 🚀 Quick Start
+## 🤖 For AI Agent - Local Deployment Guide
+
+> **This section is for AI agents** who need to deploy Klavis PowerPoint MCP Server from scratch.
+
+### Environment Requirements
+
+- **OS**: macOS / Linux / Windows
+- **Python**: 3.8+
+- **Git**: Installed
+- **IDE**: Cursor / Claude Code / OpenCode
+- **API**: OpenAI-compatible API key
+
+### Step-by-Step Deployment
+
+#### 1. Clone Repository
+
+```bash
+# Clone Klavis AI repository
+cd ~
+git clone https://github.com/Klavis-AI/klavis.git
+cd klavis/mcp_servers/local/powerpoint
+```
+
+#### 2. Setup Python Environment
+
+```bash
+# Create virtual environment
+python3 -m venv .venv
+
+# Activate virtual environment
+# macOS/Linux:
+source .venv/bin/activate
+# Windows:
+# .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+#### 3. Configure Environment Variables
+
+Create `.env` file in the powerpoint directory:
+
+```bash
+# Create .env file
+cat > .env << 'EOF'
+# OpenAI API Configuration
+OPENAI_API_KEY=your-api-key-here
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL_ID=gpt-4
+
+# Output Configuration
+OUTPUT_DIR=/Users/you/Documents/PPTX-Output
+
+# Template Path (optional)
+PPT_TEMPLATE_PATH=./templates:./assets
+EOF
+```
+
+**For Enterprise APIs** (e.g., Kuaishou Wanqing):
+
+```bash
+cat > .env << 'EOF'
+OPENAI_API_KEY=your-enterprise-api-key
+OPENAI_BASE_URL=https://your-enterprise-api-endpoint
+OPENAI_MODEL_ID=your-model-id
+OUTPUT_DIR=/Users/you/Documents/PPTX-Output
+EOF
+```
+
+#### 4. Create Output Directory
+
+```bash
+mkdir -p ~/Documents/PPTX-Output
+```
+
+#### 5. Configure MCP Client
+
+##### For Cursor IDE
+
+Edit `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "powerpoint": {
+      "command": "/Users/you/klavis/mcp_servers/local/powerpoint/.venv/bin/python",
+      "args": [
+        "/Users/you/klavis/mcp_servers/local/powerpoint/ppt_mcp_server.py"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "your-api-key-here",
+        "OPENAI_BASE_URL": "https://api.openai.com/v1",
+        "OPENAI_MODEL_ID": "gpt-4",
+        "OUTPUT_DIR": "/Users/you/Documents/PPTX-Output"
+      }
+    }
+  }
+}
+```
+
+##### For Claude Code
+
+Edit `~/.claude/config.json` or create MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "powerpoint": {
+      "command": "/Users/you/klavis/mcp_servers/local/powerpoint/.venv/bin/python",
+      "args": [
+        "/Users/you/klavis/mcp_servers/local/powerpoint/ppt_mcp_server.py"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "your-api-key-here",
+        "OPENAI_BASE_URL": "https://api.openai.com/v1",
+        "OPENAI_MODEL_ID": "gpt-4",
+        "OUTPUT_DIR": "/Users/you/Documents/PPTX-Output"
+      }
+    }
+  }
+}
+```
+
+#### 6. Verify Installation
+
+```bash
+# Test MCP Server startup (stdio mode)
+cd ~/klavis/mcp_servers/local/powerpoint
+source .venv/bin/activate
+python ppt_mcp_server.py
+
+# Should see: "Starting PowerPoint MCP Server..."
+# Press Ctrl+C to stop
+```
+
+#### 7. Install Skill (Optional)
+
+If you want AI agents to auto-activate this skill:
+
+```bash
+# Claude Code
+mkdir -p ~/.claude/skills/klavis-powerpoint-mcp
+cd ~/.claude/skills/klavis-powerpoint-mcp
+curl -O https://raw.githubusercontent.com/imwxc/klavis-powerpoint-mcp-skill/main/SKILL.md
+
+# OpenCode
+mkdir -p ~/.agents/skills/klavis-powerpoint-mcp
+cd ~/.agents/skills/klavis-powerpoint-mcp
+curl -O https://raw.githubusercontent.com/imwxc/klavis-powerpoint-mcp-skill/main/SKILL.md
+```
+
+### Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `ModuleNotFoundError` | Run `pip install -r requirements.txt` |
+| `Permission denied` | Check file permissions or use `chmod +x` |
+| `API connection failed` | Verify `OPENAI_API_KEY` and `OPENAI_BASE_URL` |
+| `Output directory not found` | Create with `mkdir -p ~/Documents/PPTX-Output` |
+| MCP not connecting | Restart IDE, check `mcp.json` syntax |
+
+### Architecture
+
+```
+MCP Client (Cursor/Claude Code)
+    ↓
+PowerPoint MCP Server (Local Python)
+    ↓
+python-pptx (Local Library)
+    ↓
+OpenAI API (Cloud, for content generation)
+    ↓
+.pptx files (Local output)
+```
+
+---
+
+## 🚀 Quick Start (Skill Installation)
 
 ### Prerequisites
 
-1. **Klavis PowerPoint MCP Server** installed and configured
-   - Project path: `~/klavis/mcp_servers/local/powerpoint/`
-   - MCP config: `~/.cursor/mcp.json`
-
+1. **Klavis PowerPoint MCP Server** deployed (see above)
 2. **API Key** configured in MCP settings
-   - Replace `your-api-key-here` with real API key
-   - Output directory: `~/Documents/PPTX-Output`
 
-### Installation
+### Skill Installation
 
 #### Claude Code
 
